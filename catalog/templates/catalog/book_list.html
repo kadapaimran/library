@@ -1,0 +1,279 @@
+{% extends 'catalog/layout.html' %}
+
+{% block content %}
+<div class="book-list-container">
+    <!-- Search Section -->
+    <div class="search-section card">
+        <form method="get" action="{% url 'book_list' %}" class="search-form">
+            <div class="search-input">
+                <input 
+                    type="text" 
+                    name="q" 
+                    value="{{ query }}" 
+                    class="form-control" 
+                    placeholder="Search books by title, author, or genre..."
+                    autocomplete="off"
+                >
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+
+    {% if recommended_books %}
+    <!-- Recommendations Section -->
+    <section class="recommendations-section">
+        <h2 class="section-title">Recommended for You</h2>
+        <div class="books-grid">
+            {% for book in recommended_books %}
+            <article class="book-card">
+                <div class="book-cover">
+                    {% if book.cover_image %}
+                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" loading="lazy">
+                    {% else %}
+                        <div class="no-cover">📚</div>
+                    {% endif %}
+                    <div class="book-overlay">
+                        <a href="{% url 'book_detail' book.pk %}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+                <div class="book-info">
+                    <h3>{{ book.title }}</h3>
+                    <p class="author">By {{ book.author }}</p>
+                    <p class="genre">{{ book.genre }}</p>
+                    <div class="book-status">
+                        {% if book.available_copies > 0 %}
+                            <span class="status-badge available">Available</span>
+                        {% else %}
+                            <span class="status-badge borrowed">Borrowed</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- All Books Section -->
+    <section class="all-books-section">
+        <h2 class="section-title">All Books</h2>
+        <div class="books-grid">
+            {% for book in books %}
+            <article class="book-card">
+                <div class="book-cover">
+                    {% if book.cover_image %}
+                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" loading="lazy">
+                    {% else %}
+                        <div class="no-cover">📚</div>
+                    {% endif %}
+                    <div class="book-overlay">
+                        <a href="{% url 'book_detail' book.pk %}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+                <div class="book-info">
+                    <h3>{{ book.title }}</h3>
+                    <p class="author">By {{ book.author }}</p>
+                    <p class="genre">{{ book.genre }}</p>
+                    <div class="book-status">
+                        {% if book.available_copies > 0 %}
+                            <span class="status-badge available">Available</span>
+                        {% else %}
+                            <span class="status-badge borrowed">Borrowed</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+            {% empty %}
+            <div class="no-results">
+                <div class="no-results-icon">🔍</div>
+                <p>No books found matching your search.</p>
+                <a href="{% url 'book_list' %}" class="btn btn-secondary">Clear Search</a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<style>
+.book-list-container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.search-section {
+    margin-bottom: 2rem;
+}
+
+.search-form {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.search-input {
+    display: flex;
+    gap: 1rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.book-card {
+    background: white;
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.book-cover {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.book-card:hover .book-cover img {
+    transform: scale(1.05);
+}
+
+.book-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.book-card:hover .book-overlay {
+    opacity: 1;
+}
+
+.no-cover {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f7fafc;
+    font-size: 3rem;
+}
+
+.book-info {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-info h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--dark);
+}
+
+.author {
+    color: var(--secondary);
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.genre {
+    color: var(--secondary);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.book-status {
+    margin-top: auto;
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.no-results-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .search-input {
+        flex-direction: column;
+    }
+
+    .books-grid {
+        gap: 1rem;
+    }
+
+    .book-card {
+        max-width: 100%;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .book-card,
+    .no-results {
+        background: #1e293b;
+    }
+
+    .no-cover {
+        background: #334155;
+    }
+
+    .book-info h3 {
+        color: #e2e8f0;
+    }
+
+    .author,
+    .genre {
+        color: #94a3b8;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,202 @@
+{% extends 'catalog/layout.html' %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Search Section -->
+    <div class="search-section card">
+        <div class="search-forms">
+            <form method="get" class="search-form">
+                <input type="text" name="search" placeholder="Search books..." value="{{ search_query }}">
+                <button type="submit" class="btn btn-primary">Search Books</button>
+            </form>
+            <form method="get" class="search-form">
+                <input type="text" name="user_search" placeholder="Search users..." value="{{ user_search }}">
+                <button type="submit" class="btn btn-primary">Search Users</button>
+            </form>
+        </div>
+    </div>
+
+    {% if user_details %}
+    <div class="user-details card">
+        <h2>User Details: {{ user_details.username }}</h2>
+        <div class="user-info">
+            <p><strong>Email:</strong> {{ user_details.email }}</p>
+            <p><strong>Date Joined:</strong> {{ user_details.date_joined|date:"M d, Y" }}</p>
+            <p><strong>Total Books Borrowed:</strong> {{ user_details.borrowing_history.count }}</p>
+        </div>
+        
+        <h3>Borrowing History</h3>
+        <div class="borrowing-history">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Book</th>
+                        <th>Borrowed Date</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for borrowing in user_details.borrowing_history %}
+                    <tr>
+                        <td>{{ borrowing.book.title }}</td>
+                        <td>{{ borrowing.borrowed_date|date:"M d, Y" }}</td>
+                        <td>{{ borrowing.due_date|date:"M d, Y" }}</td>
+                        <td>
+                            <span class="status-badge {% if borrowing.returned_date %}returned{% elif borrowing.due_date < now %}overdue{% else %}active{% endif %}">
+                                {% if borrowing.returned_date %}
+                                    Returned on {{ borrowing.returned_date|date:"M d, Y" }}
+                                {% elif borrowing.due_date < now %}
+                                    Overdue
+                                {% else %}
+                                    Active
+                                {% endif %}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="dashboard-section card">
+        <div class="section-header">
+            <h2>Book Management</h2>
+            <a href="{% url 'add_book' %}" class="btn btn-primary">Add New Book</a>
+        </div>
+        
+        <div class="books-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>ISBN</th>
+                        <th>Copies</th>
+                        <th>Available</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                    <tr>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.isbn }}</td>
+                        <td>{{ book.total_copies }}</td>
+                        <td>{{ book.available_copies }}</td>
+                        <td>
+                            <a href="{% url 'edit_book' book.pk %}" class="btn btn-small">Edit</a>
+                            <form method="post" action="{% url 'delete_book' book.pk %}" class="inline-form">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="dashboard-section card">
+        <h2>Active Borrowings</h2>
+        <div class="borrowings-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Book</th>
+                        <th>Borrowed Date</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for borrowing in borrowings %}
+                    <tr>
+                        <td>{{ borrowing.user.username }}</td>
+                        <td>{{ borrowing.book.title }}</td>
+                        <td>{{ borrowing.borrowed_date|date:"M d, Y" }}</td>
+                        <td>{{ borrowing.due_date|date:"M d, Y" }}</td>
+                        <td>
+                            <span class="status-badge {% if borrowing.due_date < now %}overdue{% else %}active{% endif %}">
+                                {% if borrowing.due_date < now %}Overdue{% else %}Active{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <form method="post" action="{% url 'return_book' borrowing.pk %}" class="inline-form">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-small">Mark as Returned</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+.search-section {
+    margin-bottom: 2rem;
+}
+
+.search-forms {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-form {
+    display: flex;
+    gap: 1rem;
+    flex: 1;
+}
+
+.search-form input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+}
+
+.user-details {
+    margin-bottom: 2rem;
+}
+
+.user-info {
+    margin: 1rem 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.borrowing-history table {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.inline-form {
+    display: inline;
+}
+
+.btn-small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+</style>
+{% endblock %}
