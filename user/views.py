@@ -147,7 +147,7 @@ def edit_profile(request):
 Your profile has been successfully updated.
 
 New Details:
-- Name: {user.get_full_name()}
+- Name: {user.username()}
 - Email: {user.email}
 
 If you didn't make these changes, please contact us immediately.

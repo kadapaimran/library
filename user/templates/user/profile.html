@@ -2,57 +2,311 @@
 
 {% block content %}
 <div class="auth-container">
-    <div class="auth-card">
-        <h2>Profile</h2>
+    <div class="auth-card card">
+        <div class="profile-header">
+            <div class="profile-banner"></div>
+            <div class="profile-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h2>Welcome, {{ user.first_name|default:user.username }}!</h2>
+            <p class="member-since">Member since {{ user.date_joined|date:"F Y" }}</p>
+        </div>
+
         <div class="profile-info">
-            <div class="info-group">
-                <label>Username</label>
-                <p>{{ user.username }}</p>
+            <div class="info-section">
+                <h3 class="section-title">Personal Information</h3>
+                <div class="info-grid">
+                    <div class="info-group">
+                        <label>
+                            <i class="fas fa-user"></i>
+                            Username
+                        </label>
+                        <p>{{ user.username }}</p>
+                    </div>
+
+                    <div class="info-group">
+                        <label>
+                            <i class="fas fa-envelope"></i>
+                            Email
+                        </label>
+                        <p>{{ user.email }}</p>
+                    </div>
+
+                    <div class="info-group">
+                        <label>
+                            <i class="fas fa-signature"></i>
+                            First Name
+                        </label>
+                        <p>{{ user.first_name|default:"Not set" }}</p>
+                    </div>
+
+                    <div class="info-group">
+                        <label>
+                            <i class="fas fa-signature"></i>
+                            Last Name
+                        </label>
+                        <p>{{ user.last_name|default:"Not set" }}</p>
+                    </div>
+                </div>
             </div>
-            <div class="info-group">
-                <label>Email</label>
-                <p>{{ user.email }}</p>
+
+            <div class="profile-stats-section">
+                <h3 class="section-title">Library Activity</h3>
+                <div class="profile-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-book-reader"></i>
+                        </div>
+                        <span class="stat-number">{{ borrowed_books_count|default:"0" }}</span>
+                        <span class="stat-label">Currently Borrowed</span>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <span class="stat-number">{{ total_borrowed|default:"0" }}</span>
+                        <span class="stat-label">Total Books Read</span>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <span class="stat-number">{{ days_member }}</span>
+                        <span class="stat-label">Days as Member</span>
+                    </div>
+                </div>
             </div>
-            <div class="info-group">
-                <label>First Name</label>
-                <p>{{ user.first_name|default:"Not set" }}</p>
-            </div>
-            <div class="info-group">
-                <label>Last Name</label>
-                <p>{{ user.last_name|default:"Not set" }}</p>
-            </div>
+
             <div class="profile-actions">
-                <a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+                <a href="{% url 'edit_profile' %}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i>
+                    Edit Profile
+                </a>
             </div>
         </div>
     </div>
 </div>
 
 <style>
-.profile-info {
-    margin-top: 1.5rem;
-}
+    .auth-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 0 1.5rem;
+    }
 
-.info-group {
-    margin-bottom: 1.5rem;
-}
+    .auth-card {
+        background: var(--bg-card);
+        padding: 0;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 12px 24px rgba(0, 0, 0, 0.05);
+    }
 
-.info-group label {
-    display: block;
-    font-size: 0.875rem;
-    color: #64748b;
-    margin-bottom: 0.25rem;
-}
+    .profile-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+        padding: 2rem 1.5rem;
+        background: var(--bg-header);
+    }
 
-.info-group p {
-    font-size: 1rem;
-    color: #1e293b;
-    font-weight: 500;
-}
+    .profile-banner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 120px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        opacity: 0.1;
+    }
 
-.profile-actions {
-    margin-top: 2rem;
-    text-align: center;
-}
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        background: var(--bg-card);
+        border-radius: 50%;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 4px solid var(--bg-card);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 1;
+    }
+
+    .profile-avatar i {
+        font-size: 3rem;
+        color: var(--primary);
+    }
+
+    .profile-header h2 {
+        color: var(--primary);
+        font-family: 'Merriweather', serif;
+        margin: 0;
+        font-size: 1.75rem;
+    }
+
+    .member-since {
+        color: var(--text-medium);
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .profile-info {
+        padding: 0 2.5rem 2.5rem;
+    }
+
+    .info-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border);
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .info-group {
+        margin-bottom: 0;
+    }
+
+    .info-group label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: var(--text-medium);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .info-group label i {
+        color: var(--primary);
+        width: 1rem;
+    }
+
+    .info-group p {
+        font-size: 1.1rem;
+        color: var(--text-dark);
+        font-weight: 500;
+        padding: 0.75rem 1rem;
+        background: var(--bg-main);
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        transition: var(--transition);
+    }
+
+    .info-group p:hover {
+        background: var(--bg-card);
+        border-color: var(--primary);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow);
+    }
+
+    .profile-stats-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .profile-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1.5rem;
+        background: var(--bg-main);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border);
+        transition: var(--transition);
+    }
+
+    .stat-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--bg-card);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        border: 2px solid var(--border);
+    }
+
+    .stat-icon i {
+        font-size: 1.5rem;
+        color: var(--primary);
+    }
+
+    .stat-number {
+        display: block;
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: var(--primary);
+        font-family: 'Merriweather', serif;
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-medium);
+        font-weight: 500;
+    }
+
+    .profile-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .profile-actions .btn {
+        min-width: 200px;
+        font-size: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .auth-card {
+            border-radius: 0;
+        }
+
+        .profile-info {
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .profile-stats {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .stat-item {
+            padding: 1.25rem;
+        }
+
+        .profile-actions .btn {
+            width: 100%;
+        }
+    }
 </style>
 {% endblock %}

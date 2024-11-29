@@ -1,29 +1,245 @@
 {% extends 'catalog/layout.html' %}
 
 {% block content %}
+<style>
+    :root {
+        /* Warm, paper-like theme for library */
+        --bg-primary: #f8f5f1;
+        --bg-secondary: #ffffff;
+        --text-primary: #2c1810;
+        --text-secondary: #594a42;
+        --accent-color: #8b4513;
+        --accent-hover: #6b3410;
+        --error-color: #923838;
+        --input-bg: #ffffff;
+        --input-border: #e8e0d8;
+        --input-border-focus: #c4a484;
+        --shadow-color: rgba(44, 24, 16, 0.08);
+    }
+
+    [data-theme="dark"] {
+        /* Cozy reading room dark theme */
+        --bg-primary: #282321;
+        --bg-secondary: #332d2a;
+        --text-primary: #f0ebe8;
+        --text-secondary: #d5cac3;
+        --accent-color: #c4a484;
+        --accent-hover: #d4b494;
+        --input-bg: #232020;
+        --input-border: #443d39;
+        --input-border-focus: #c4a484;
+        --shadow-color: rgba(0, 0, 0, 0.25);
+    }
+
+    .auth-container {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--bg-primary);
+        background-image:
+            url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23c4a484' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+        padding: 1.5rem;
+    }
+
+    .auth-card {
+        background-color: var(--bg-secondary);
+        padding: 2.5rem;
+        border-radius: 1rem;
+        box-shadow:
+            0 4px 6px var(--shadow-color),
+            0 1px 3px var(--shadow-color);
+        width: 100%;
+        max-width: 420px;
+        border: 1px solid var(--input-border);
+    }
+
+    .auth-card h2 {
+        color: var(--text-primary);
+        text-align: center;
+        margin-bottom: 2rem;
+        font-size: 2rem;
+        font-weight: 700;
+        font-family: 'Crimson Text', Georgia, serif;
+        letter-spacing: -0.025em;
+    }
+
+    .auth-card h2::after {
+        content: "📚";
+        display: block;
+        font-size: 1.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .alert-error {
+        background-color: rgba(146, 56, 56, 0.1);
+        border: 1px solid var(--error-color);
+        color: var(--error-color);
+        padding: 1rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid var(--input-border);
+        background-color: var(--input-bg);
+        color: var(--text-primary);
+        border-radius: 0.75rem;
+        outline: none;
+        transition: all 0.2s ease;
+        font-size: 1rem;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .form-group input:hover {
+        border-color: var(--accent-color);
+    }
+
+    .form-group input:focus {
+        border-color: var(--input-border-focus);
+        box-shadow: 0 0 0 3px rgba(196, 164, 132, 0.2);
+    }
+
+    .btn-primary {
+        background-color: var(--accent-color);
+        color: white;
+        padding: 0.875rem;
+        border: none;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        width: 100%;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--accent-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(196, 164, 132, 0.25);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    .auth-links {
+        margin-top: 2rem;
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-family: 'Open Sans', sans-serif;
+    }
+
+    .auth-links a {
+        color: var(--accent-color);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s ease;
+        margin-left: 0.25rem;
+    }
+
+    .auth-links a:hover {
+        color: var(--accent-hover);
+        text-decoration: underline;
+    }
+
+    .theme-toggle {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: 1px solid var(--input-border);
+        color: var(--text-secondary);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+        background-color: var(--bg-secondary);
+    }
+
+    .theme-toggle:hover {
+        color: var(--text-primary);
+        background-color: var(--bg-primary);
+        border-color: var(--accent-color);
+    }
+</style>
+
 <div class="auth-container">
+    <button class="theme-toggle" onclick="toggleTheme()">
+        🌓
+    </button>
     <div class="auth-card">
-        <h2>Welcome Back</h2>
+        <h2>Library Login</h2>
         {% if form.errors %}
             <div class="alert alert-error">
-                Invalid username or password.
+                Invalid library card number or password.
             </div>
         {% endif %}
         <form method="post" class="auth-form">
             {% csrf_token %}
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" name="username" id="username" required>
+                <label for="username">Library Card Number</label>
+                <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    required
+                    autocomplete="username"
+                    placeholder="Enter your library card number"
+                >
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password" required>
+                <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    required
+                    autocomplete="current-password"
+                    placeholder="Enter your password"
+                >
             </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            <button type="submit" class="btn btn-primary">
+                Access Library
+            </button>
         </form>
         <div class="auth-links">
-            <p>Don't have an account? <a href="{% url 'signup' %}">Sign Up</a></p>
+            <p>New to our library? <a href="{% url 'signup' %}">Get a Library Card</a></p>
         </div>
     </div>
 </div>
+
+<script>
+    function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+
+    // Set initial theme based on user preference
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+</script>
 {% endblock %}
