@@ -52,10 +52,15 @@ def librarian_dashboard(request):
 @user_passes_test(is_librarian)
 def add_book(request):
     if request.method == 'POST':
+        isbn = request.POST['isbn']
+        if Book.objects.filter(isbn=isbn).exists():
+            messages.error(request, 'A book with this ISBN already exists.')
+            return redirect('librarian_dashboard')
+
         book = Book.objects.create(
             title=request.POST['title'],
             author=request.POST['author'],
-            isbn=request.POST['isbn'],
+            isbn=isbn,
             genre=request.POST['genre'],
             description=request.POST['description'],
             cover_image=request.FILES.get('cover_image'),
@@ -97,7 +102,7 @@ def edit_book(request, pk):
 def delete_book(request, pk):
     book = get_object_or_404(Book, pk=pk)
     
-    # Check if book has any active borrowings
+
     active_borrowings = Borrowing.objects.filter(
         book=book,
         returned_date__isnull=True

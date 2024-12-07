@@ -42,13 +42,27 @@
 </div>
 
 <style>
-.card-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: #1e293b;
+/* General Page Styling */
+.container {
+    padding: 2rem;
+    background-color: #f7f3e9; /* Warm off-white background */
 }
 
+.card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for card */
+}
+
+.card-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #2e3a47; /* Dark charcoal for titles */
+}
+
+/* Borrowing List Styling */
 .borrowings-list {
     display: flex;
     flex-direction: column;
@@ -60,8 +74,14 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
-    background: #f8fafc;
-    border-radius: 0.5rem;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0; /* Soft border for the items */
+    transition: background-color 0.3s ease;
+}
+
+.borrowing-item:hover {
+    background-color: #f1f5f9; /* Light hover effect */
 }
 
 .book-info {
@@ -74,18 +94,19 @@
     width: 80px;
     height: 120px;
     object-fit: cover;
-    border-radius: 0.25rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Book cover shadow */
 }
 
 .book-details h3 {
     font-size: 1.125rem;
     font-weight: 600;
-    color: #1e293b;
+    color: #2e3a47; /* Dark gray for book titles */
     margin-bottom: 0.25rem;
 }
 
 .book-author {
-    color: #64748b;
+    color: #6c757d; /* Muted gray for author names */
     font-size: 0.875rem;
     margin-bottom: 0.5rem;
 }
@@ -95,13 +116,67 @@
     flex-direction: column;
     gap: 0.25rem;
     font-size: 0.875rem;
-    color: #64748b;
+    color: #6c757d; /* Muted gray for dates */
 }
 
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 0.875rem;
+    font-weight: bold;
+    border-radius: 12px;
+    text-transform: uppercase;
+}
+
+.status-badge.returned {
+    background-color: #6c757d; /* Gray for returned */
+    color: white;
+}
+
+.status-badge.overdue {
+    background-color: #e74c3c; /* Red for overdue */
+    color: white;
+}
+
+.status-badge.active {
+    background-color: #27ae60; /* Green for active */
+    color: white;
+}
+
+/* No Borrowings Message */
 .no-borrowings {
     text-align: center;
-    color: #64748b;
+    color: #6c757d;
     padding: 2rem;
+    font-size: 1.125rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .card {
+        padding: 1.2rem;
+    }
+
+    .borrowings-list {
+        gap: 1rem;
+    }
+
+    .borrowing-item {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .book-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .book-cover {
+        width: 60px;
+        height: 90px;
+    }
 }
 </style>
+
 {% endblock %}

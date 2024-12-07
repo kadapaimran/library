@@ -12,7 +12,7 @@ urlpatterns = [
     path('profile/', views.user_profile, name='user_profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('borrowing-history/', views.borrowing_history, name='borrowing_history'),
-    path('download-book/<int:pk>/', views.download_book, name='download_book'),
+    path('view_pdf/<int:pk>/', views.view_pdf, name='download_book'),
     path('return-book/<int:pk>/', views.return_book, name='return_book'),
     path('borrowing/2/update-progress/',views.update_progress, name='update_progress'),
 ]

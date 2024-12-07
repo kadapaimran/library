@@ -20,12 +20,10 @@ def signup(request):
                 with transaction.atomic():
                     user = form.save()
 
-                    # Check if username starts with 'LIB' to assign librarian status
                     if user.username.upper().startswith('LIB'):
                         user.is_staff = True
                         user.save()
 
-                    # Send welcome email
                     send_mail(
                         'Welcome to the Library',
                         f'''Dear {user.username},
@@ -63,17 +61,15 @@ Library Team''',
 
 @login_required
 def user_dashboard(request):
-    # Get active borrowings
     active_borrowings = Borrowing.objects.filter(
         user=request.user,
         returned_date__isnull=True
     ).select_related('book').order_by('due_date')
 
-    # Calculate overdue status and reading progress
     for borrowing in active_borrowings:
         borrowing.is_overdue = borrowing.due_date < timezone.now()
         if hasattr(borrowing, 'current_page'):
-            total_pages = borrowing.book.total_pages or 100  # Default to 100 if not set
+            total_pages = borrowing.book.total_pages or 100
             borrowing.progress = (borrowing.current_page / total_pages) * 100
         else:
             borrowing.progress = 0
@@ -169,12 +165,10 @@ Library Team''',
 
 @login_required
 def borrowing_history(request):
-    # Get all borrowings with book information
     borrowings = Borrowing.objects.filter(
         user=request.user
     ).select_related('book').order_by('-borrowed_date')
 
-    # Calculate reading duration for returned books
     for borrowing in borrowings:
         if borrowing.returned_date:
             duration = borrowing.returned_date - borrowing.borrowed_date
@@ -192,29 +186,29 @@ def borrowing_history(request):
 
 
 @login_required
-def download_book(request, pk):
+def view_pdf(request, pk):
     borrowing = get_object_or_404(Borrowing, pk=pk, user=request.user)
 
-    # Check if the book is still borrowed
     if borrowing.returned_date:
-        messages.error(request, 'You cannot download a book that has been returned.')
+        messages.error(request, 'You cannot view a book that has been returned.')
         return redirect('user_dashboard')
 
     try:
-        # Log the download
+        # Log the view action
         borrowing.last_accessed = timezone.now()
         borrowing.save()
 
-        # Serve the PDF file
+        # Serve the PDF file for viewing in a new tab
         response = FileResponse(
             borrowing.book.pdf_file,
             content_type='application/pdf'
         )
-        response['Content-Disposition'] = f'attachment; filename="{borrowing.book.title}.pdf"'
+        response['Content-Disposition'] = f'inline; filename="{borrowing.book.title}.pdf"'
         return response
     except Exception as e:
-        messages.error(request, 'Error downloading the book. Please try again later.')
+        messages.error(request, 'Error viewing the book. Please try again later.')
         return redirect('user_dashboard')
+
 
 
 @login_required
@@ -224,15 +218,12 @@ def return_book(request, pk):
     if not borrowing.returned_date:
         try:
             with transaction.atomic():
-                # Mark as returned
                 borrowing.returned_date = timezone.now()
                 borrowing.save()
 
-                # Update book availability
                 borrowing.book.available_copies += 1
                 borrowing.book.save()
 
-                # Send return confirmation email
                 send_mail(
                     'Book Return Confirmation',
                     f'''Dear {request.user.username},
@@ -274,7 +265,6 @@ def update_progress(request):
                 returned_date__isnull=True
             )
 
-            # Update progress
             page_number = int(page_number)
             total_pages = borrowing.book.total_pages or 100
 
@@ -283,7 +273,6 @@ def update_progress(request):
                 borrowing.last_accessed = timezone.now()
                 borrowing.save()
 
-                # Calculate progress percentage
                 progress = (page_number / total_pages) * 100
 
                 return JsonResponse({

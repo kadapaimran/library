@@ -64,3 +64,4 @@ def borrow_book(request, pk):
         else:
             messages.error(request, 'This book is currently not available')
     return redirect('book_detail', pk=pk)
+

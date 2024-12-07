@@ -26,42 +26,179 @@
                     {% if borrowing.is_overdue %}
                         <span class="status-badge overdue">Overdue</span>
                     {% else %}
-                        <span class="status-badge borrowed">Active</span>
+                        <span class="status-badge active">Active</span>
                     {% endif %}
                     <div class="borrowing-actions">
-                        <a href="{% url 'download_book' borrowing.pk %}" class="btn btn-small">Download PDF</a>
+                        <a href="{% url 'download_book' borrowing.pk %}" class="btn btn-download">View Book</a>
                         <form method="post" action="{% url 'return_book' borrowing.pk %}" class="inline-form">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-small btn-return">Return Book</button>
+                            <button type="submit" class="btn btn-return">Return Book</button>
                         </form>
                     </div>
                 </div>
             </div>
             {% empty %}
-            <p>You haven't borrowed any books yet.</p>
+            <p class="empty-message">You haven’t borrowed any books yet.</p>
             {% endfor %}
         </div>
     </div>
 </div>
 
 <style>
-.borrowing-actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
+/* Global Styling */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f2f2f7;
+    color: #1c1c1e;
+    margin: 0;
+    padding: 0;
 }
 
+/* User Dashboard Container */
+.user-dashboard {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Header Section */
+.dashboard-header {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.dashboard-header h1 {
+    font-size: 2.4rem;
+    font-weight: 600;
+    color: #000000;
+}
+
+.stats .stat-item {
+    margin-top: 15px;
+    font-size: 1.2rem;
+    color: #555555;
+}
+
+/* Borrowings Section */
+.borrowings-section {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.borrowings-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: #1c1c1e;
+}
+
+/* Borrowing Cards */
+.borrowings-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.borrowing-card {
+    display: flex;
+    flex-direction: row;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    padding: 20px;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    width: calc(100% - 40px);
+}
+
+.book-thumbnail {
+    width: 120px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 20px;
+    border: 1px solid #e0e0e0;
+}
+
+/* Borrowing Info */
+.borrowing-info h3 {
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: #000000;
+    margin-bottom: 8px;
+}
+
+.borrowing-info p {
+    font-size: 1.1rem;
+    color: #666666;
+}
+
+.status-badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.status-badge.overdue {
+    background-color: #ff3b30;
+    color: #ffffff;
+}
+
+.status-badge.active {
+    background-color: #34c759;
+    color: #ffffff;
+}
+
+/* Buttons */
+.borrowing-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.btn {
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.btn-download {
+    background-color: #007aff;
+    color: #ffffff;
+}
+
+.btn-download:hover {
+    background-color: #0056b3;
+}
+
+
 .btn-return {
-    background: #22c55e;
-    color: white;
+    background-color: #ffff; /* Change to blue */
+    color: #000000;
 }
 
 .btn-return:hover {
-    background: #16a34a;
+    background-color: #fffff; /* Darker blue for hover effect */
 }
 
-.inline-form {
-    display: inline;
+
+/* Empty State */
+.empty-message {
+    font-size: 1.2rem;
+    color: #8e8e93;
+    text-align: center;
+    margin-top: 20px;
 }
 </style>
+
 {% endblock %}

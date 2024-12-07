@@ -34,22 +34,17 @@ class Book(models.Model):
 
     @classmethod
     def get_recommendations(cls, user, limit=5):
-        # Get user's reading history
         user_borrowings = Borrowing.objects.filter(user=user).select_related('book')
         
         if not user_borrowings.exists():
-            # If no history, return popular books
             return cls.objects.filter(available_copies__gt=0).order_by('-id')[:limit]
         
-        # Get genres and authors from user's history
         genres = Counter(b.book.genre for b in user_borrowings)
         authors = Counter(b.book.author for b in user_borrowings)
         
-        # Find books with similar genres and authors
         favorite_genres = [genre for genre, _ in genres.most_common(3)]
         favorite_authors = [author for author, _ in authors.most_common(3)]
         
-        # Exclude books already borrowed
         borrowed_books = set(b.book.id for b in user_borrowings)
         
         recommendations = cls.objects.filter(
